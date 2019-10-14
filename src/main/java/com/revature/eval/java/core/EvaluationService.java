@@ -1,8 +1,11 @@
 package com.revature.eval.java.core;
 
 import java.time.temporal.Temporal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class EvaluationService {
 
@@ -15,7 +18,7 @@ public class EvaluationService {
 	 */
 	public String reverse(String string) {
 		char[] reversed = new char[string.length()];
-		for (int i = reversed.length - 1, j=0; i >= 0; i--, j++) {
+		for (int i = reversed.length - 1, j = 0; i >= 0; i--, j++) {
 			reversed[j] = string.charAt(i);
 		}
 		return new String(reversed);
@@ -30,8 +33,13 @@ public class EvaluationService {
 	 * @return
 	 */
 	public String acronym(String phrase) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		String[] result = phrase.split("[ -]");
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < result.length; i++) {
+			sb.append(result[i].charAt(0));
+		}
+		String finalResult = sb.toString();
+		return finalResult.toUpperCase();
 	}
 
 	/**
@@ -83,19 +91,36 @@ public class EvaluationService {
 			this.sideThree = sideThree;
 		}
 
+		/*
+		 * If all sides are equal, it is an Equilateral.
+		 */
 		public boolean isEquilateral() {
-			// TODO Write an implementation for this method declaration
-			return false;
+			if (this.sideOne == this.sideTwo && this.sideTwo == this.sideThree) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 
+		/*
+		 * If any 2 sides are equal, it is an Isosceles
+		 */
 		public boolean isIsosceles() {
-			// TODO Write an implementation for this method declaration
+			if (this.sideOne == this.sideTwo || this.sideTwo == this.sideThree || this.sideOne == this.sideThree) {
+				return true;
+			}
 			return false;
 		}
 
+		/*
+		 * If any side is not equal to another, we can assume that it is most likely
+		 * Scalene. Assuming, all inputs are actually for a triangle.
+		 */
 		public boolean isScalene() {
-			// TODO Write an implementation for this method declaration
-			return false;
+			if (this.sideOne == this.sideTwo || this.sideTwo == this.sideThree || this.sideOne == this.sideThree) {
+				return false;
+			}
+			return true;
 		}
 
 	}
@@ -116,7 +141,60 @@ public class EvaluationService {
 	 * @return
 	 */
 	public int getScrabbleScore(String string) {
-		// TODO Write an implementation for this method declaration
+		int score = 0;
+		char[] cArray = string.toLowerCase().toCharArray();
+		for (int i = 0; i < cArray.length; i++) {
+			score += scoreChecker(cArray[i]);
+		}
+		return score;
+	}
+
+	/*
+	 * Check for the score of the letter
+	 */
+	private int scoreChecker(char c) {
+		char[] cArray = new char[] { 'a', 'e', 'i', 'o', 'u', 'l', 'n', 'r', 's', 't' };
+		for (int i = 0; i < cArray.length; i++) {
+			if (c == cArray[i]) {
+				return 1;
+			}
+		}
+		cArray = new char[] { 'd', 'g' };
+		for (int i = 0; i < cArray.length; i++) {
+			if (c == cArray[i]) {
+				return 2;
+			}
+		}
+		cArray = new char[] { 'b', 'c', 'm', 'p' };
+		for (int i = 0; i < cArray.length; i++) {
+			if (c == cArray[i]) {
+				return 3;
+			}
+		}
+		cArray = new char[] { 'f', 'h', 'v', 'w', 'y' };
+		for (int i = 0; i < cArray.length; i++) {
+			if (c == cArray[i]) {
+				return 4;
+			}
+		}
+		cArray = new char[] { 'k' };
+		for (int i = 0; i < cArray.length; i++) {
+			if (c == cArray[i]) {
+				return 5;
+			}
+		}
+		cArray = new char[] { 'j', 'x' };
+		for (int i = 0; i < cArray.length; i++) {
+			if (c == cArray[i]) {
+				return 8;
+			}
+		}
+		cArray = new char[] { 'q', 'z' };
+		for (int i = 0; i < cArray.length; i++) {
+			if (c == cArray[i]) {
+				return 10;
+			}
+		}
 		return 0;
 	}
 
@@ -151,9 +229,61 @@ public class EvaluationService {
 	 * Note: As this exercise only deals with telephone numbers used in
 	 * NANP-countries, only 1 is considered a valid country code.
 	 */
-	public String cleanPhoneNumber(String string) {
-		// TODO Write an implementation for this method declaration
-		return null;
+	public String cleanPhoneNumber(String string) throws IllegalArgumentException {
+		char[] cArray = string.toCharArray();
+		List<Character> numbers = new ArrayList<Character>();
+		for (int i = 0; i < cArray.length; i++) {
+			if (isNumber(cArray[i])) {
+				numbers.add(cArray[i]);
+			}
+		}
+
+		// if the number is less the 10, we can assume that it is not a number.
+		if (numbers.size() > 10 || numbers.size() < 10) {
+			if (numbers.size() > 10) {
+				if (numbers.get(0) != '1') {
+					throw new IllegalArgumentException();
+				}
+			} else {
+				throw new IllegalArgumentException();
+			}
+
+		}
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < numbers.size(); i++) {
+			if (i == 0 || i == 3) {
+				if (isNumberN(numbers.get(i))) {
+					sb.append(numbers.get(i));
+				} else {
+					throw new IllegalArgumentException();
+				}
+			} else {
+				sb.append(numbers.get(i));
+			}
+		}
+		return sb.toString();
+	}
+
+	// check of the N in the phone number is correct. 1 (NXX)-NXX-XXXX
+	public boolean isNumberN(char c) {
+		char[] numbers = new char[] { '2', '3', '4', '5', '6', '7', '8', '9' };
+		for (int i = 0; i < numbers.length; i++) {
+			if (c == numbers[i]) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// check if there is a number 1 (NXX)-NXX-XXXX
+	public boolean isNumber(char c) {
+		char[] numbers = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+		for (int i = 0; i < numbers.length; i++) {
+			if (c == numbers[i]) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -166,8 +296,21 @@ public class EvaluationService {
 	 * @return
 	 */
 	public Map<String, Integer> wordCount(String string) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		Map<String, Integer> mapCount = new HashMap<String, Integer>();
+		String str = string.replace(",", " ");
+		String[] strArray = str.replaceAll("\n", "").trim().split(" ");
+		int count = 1;
+		for (String s : strArray) {
+			count = 1;
+			if (mapCount.containsKey(s)) {
+				count = mapCount.get(s) + 1;
+			}
+			mapCount.put(s, count);
+		}
+//		for(Entry<String, Integer> m: mapCount.entrySet()) {
+//			System.out.println(m);
+//		}
+		return mapCount;
 	}
 
 	/**
@@ -246,8 +389,77 @@ public class EvaluationService {
 	 * @return
 	 */
 	public String toPigLatin(String string) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		// https://en.wikipedia.org/wiki/Pig_latin
+		String[] strArray = string.split(" ");
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < strArray.length; i++) {
+			if (i > 0) {
+				sb.append(" ");
+			}
+			if (checkVowel(strArray[i], ' ')) {
+				sb.append(strArray[i].concat("ay"));
+			} else if (checkConsonant(strArray[i])) {
+				sb.append(checkMoveConsonant(strArray[i]));
+			}
+		}
+		return sb.toString();
+	}
+
+	private String checkMoveConsonant(String str) {
+		char[] cArray = str.toCharArray();
+		StringBuilder sb = new StringBuilder();
+		int count = 1;
+		boolean hitVowel = false;
+		for (int i = 1; i < cArray.length; i++) {
+			if (!hitVowel) {
+				if (checkVowel("" + cArray[i], cArray[i - 1])) {
+					sb.append(cArray[i]);
+					hitVowel = true;
+				} else {
+					count++;
+				}
+			} else {
+				sb.append(cArray[i]);
+			}
+		}
+		for (int i = 0; i < count; i++) {
+			sb.append(cArray[i]);
+		}
+		sb.append("ay");
+		return sb.toString();
+	}
+
+	private boolean checkConsonant(String str) {
+		// B, C, D, F, G, H, J, K, L, M, N, P, Q, R, S, T, V, X, Y, Z
+		char[] vowels = new char[] { 'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't',
+				'v', 'x', 'y', 'z' };
+		char[] cArray = str.toCharArray();
+		for (int i = 0; i < vowels.length; i++) {
+			if (cArray[0] == vowels[i]) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private boolean checkVowel(String str, char exceptionVowels) {
+		// there may be more exceptions to vowels, but I only found q to u.
+		// The wiki only mentioned consonant clusters (multiple consonants that form one
+		// sound), q+u is one of those
+		char[] vowels;
+		if (exceptionVowels == 'q') {
+			vowels = new char[] { 'a', 'e', 'i', 'o' };
+		} else {
+			vowels = new char[] { 'a', 'e', 'i', 'o', 'u' };
+		}
+		char[] cArray = str.toCharArray();
+		for (int i = 0; i < vowels.length; i++) {
+			if (cArray[0] == vowels[i]) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -266,8 +478,33 @@ public class EvaluationService {
 	 * @return
 	 */
 	public boolean isArmstrongNumber(int input) {
-		// TODO Write an implementation for this method declaration
+		char[] numbers = convertNumberToCharArray(input);
+		return checkIfArmstrongNumber(numbers, input);
+	}
+
+	private char[] convertNumberToCharArray(int input) {
+		String number = "" + input;
+		return number.toCharArray();
+	}
+
+	private boolean checkIfArmstrongNumber(char[] numbers, int input) {
+		int totalValue = 0;
+		for (int i = 0; i < numbers.length; i++) {
+			int number = Character.getNumericValue(numbers[i]);
+			totalValue = totalValue + calculateNumber(number, numbers.length);
+		}
+		if (totalValue == input) {
+			return true;
+		}
 		return false;
+	}
+
+	private int calculateNumber(int number, int toThePowerOf) {
+		int value = number;
+		for (int i = 1; i < toThePowerOf; i++) {
+			value = value * number;
+		}
+		return value;
 	}
 
 	/**
@@ -281,8 +518,41 @@ public class EvaluationService {
 	 * @return
 	 */
 	public List<Long> calculatePrimeFactorsOf(long l) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		return countUpToMaxNumber(l);
+	}
+
+	private List<Long> countUpToMaxNumber(Long l) {
+		List<Long> primeNumbers = new ArrayList<Long>();
+		int i = 2;
+		while (l != 1) {
+			if (l % i == 0) {
+				if (checkIfPrimeNumber(i)) {
+					l = l / i;
+					primeNumbers.add((long) i);
+				} else {
+					i++;
+				}
+			} else {
+				i++;
+			}
+		}
+		return primeNumbers;
+	}
+
+	private boolean checkIfPrimeNumber(long i) {
+		if (i < 3) {
+			return true;
+		}
+		int totalDividableNumber = 0;
+		for (int j = 2; j <= i; j++) {
+			if (i % j == 0) {
+				totalDividableNumber++;
+			}
+			if (totalDividableNumber > 1) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -320,7 +590,7 @@ public class EvaluationService {
 		}
 
 		public String rotate(String string) {
-			// TODO Write an implementation for this method declaration
+			System.out.println(string);
 			return null;
 		}
 

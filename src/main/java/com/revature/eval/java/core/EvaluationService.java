@@ -348,7 +348,7 @@ public class EvaluationService {
 	 * binary search is a dichotomic divide and conquer search algorithm.
 	 * 
 	 */
-	static class BinarySearch<T> {
+	static class BinarySearch<T extends Comparable<T>> {
 		private List<T> sortedList;
 
 		public int indexOf(T t) {
@@ -589,9 +589,40 @@ public class EvaluationService {
 			this.key = key;
 		}
 
+		// ascii values: 	A = 065, Z = 090
+		//					a = 097, z = 122
 		public String rotate(String string) {
-			System.out.println(string);
-			return null;
+			StringBuilder sb = new StringBuilder();
+			for(int i = 0; i < string.length(); i++) {
+				int number = string.charAt(i);
+				char c = calculateIfUpperOrLowerCase(number, key);
+				sb.append(c);
+			}
+			return sb.toString();
+		}
+		
+		private char calculateIfUpperOrLowerCase(int number, int key) {
+			char c;
+			// if statements are setup to display that number should be between x =< number =< y
+			if(65 <= number && number <= 90) {
+				c = (char) moveLetter(65, 90, number, key);
+			} else if(97 <= number && number <= 122){
+				c = (char) moveLetter(97, 122, number, key);
+			} else {
+				c = (char) number;
+			}
+			return c;
+		}
+		
+		private int moveLetter(int x, int y, int number, int key) {
+			for(int i = 0; i < key; i++) {
+				if(number == y) {
+					number = x;
+				} else {
+					number++;
+				}
+			}
+			return number;
 		}
 
 	}
@@ -609,8 +640,47 @@ public class EvaluationService {
 	 * @return
 	 */
 	public int calculateNthPrime(int i) {
-		// TODO Write an implementation for this method declaration
-		return 0;
+		int finalNumber = 0;
+		int totalNumberOfPrimeNumbers = 0;
+		if(i == totalNumberOfPrimeNumbers) {
+			throw new IllegalArgumentException();
+		} else {
+			for(int number = 2; totalNumberOfPrimeNumbers < i; number++) {
+				if(checkIfPrime(number)) {
+					totalNumberOfPrimeNumbers++;
+				}
+				if(totalNumberOfPrimeNumbers == i) {
+					finalNumber = number;
+				}
+			}
+		}
+		return finalNumber;
+	}
+	
+	private boolean checkIfPrime(int number) {
+		if (number < 3) {
+			return true;
+		}
+		// we can assume that a number can be divided by it's self. So we will start it at one
+		int totalDividableNumber = 1;
+		// by cutting the number in half, we decrease the number of iterations. since there is no point to re-checking the higher values
+		// this calculation has decreased my time from 5 seconds to 1.6s
+		int cutNumberInHalf = 0;
+		if(number%2 == 0) {
+			cutNumberInHalf = number/2;
+		} else {
+			cutNumberInHalf = (number - 1)/2;
+			cutNumberInHalf++;
+		}
+		for (int j = 2; j <= cutNumberInHalf; j++) {
+			if (number % j == 0) {
+				totalDividableNumber++;
+			}
+			if (totalDividableNumber > 1) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -716,6 +786,7 @@ public class EvaluationService {
 	 * @return
 	 */
 	public Temporal getGigasecondDate(Temporal given) {
+		// use localDate Time
 		// TODO Write an implementation for this method declaration
 		return null;
 	}

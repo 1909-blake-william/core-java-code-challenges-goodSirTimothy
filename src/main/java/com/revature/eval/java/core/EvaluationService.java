@@ -885,16 +885,16 @@ public class EvaluationService {
 	public boolean isValidIsbn(String string) {
 		char[] cArray = string.replace("-", "").toCharArray();
 		// final int because this question has a constant count down 10 to 1 
-		final int ten = 10;
+		final int TEN = 10;
 		int totalValue = 0;
 		for (int i = 0; i < cArray.length; i++) {
 			// check if the character is a digit
 			if (Character.isDigit(cArray[i])) {
 				// add the digit times ten-i
-				totalValue = totalValue + (Character.getNumericValue(cArray[i]) * (ten - i));
+				totalValue = totalValue + (Character.getNumericValue(cArray[i]) * (TEN - i));
 			} else if (cArray[i] == 'X') {
 				// if there is a char value X, add ten. 
-				totalValue = totalValue + (10 * (ten - i));
+				totalValue = totalValue + (10 * (TEN - i));
 			}
 		}
 		// check if divisible by 11.
@@ -957,7 +957,7 @@ public class EvaluationService {
 	 * @return
 	 */
 	public Temporal getGigasecondDate(Temporal given) {
-		int GIGASECOND = 1000000000;
+		final int GIGASECOND = 1000000000;
 		// check if the current temporal supports seconds
 		if (given.isSupported(ChronoUnit.SECONDS)) {
 			given = given.plus(GIGASECOND, ChronoUnit.SECONDS);
